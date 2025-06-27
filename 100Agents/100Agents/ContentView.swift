@@ -1,21 +1,20 @@
-//
-//  ContentView.swift
-//  100Agents
-//
-//  Created by Brayton Lordianto on 6/26/25.
-//
-
 import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        TabView {
+            BrowseView()
+                .tabItem {
+                    Image(systemName: "square.grid.2x2")
+                    Text("Browse")
+                }
+
+            HistoryView()
+                .tabItem {
+                    Image(systemName: "clock")
+                    Text("History")
+                }
         }
-        .padding()
     }
 }
 
