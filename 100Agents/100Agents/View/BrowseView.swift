@@ -24,12 +24,7 @@ struct BrowseView: View {
         NavigationView {
             ZStack(alignment: .bottom) {
                 ScrollView {
-                    VStack(alignment: .leading, spacing: 20) {
-                        Text("Choose a topic to learn")
-                            .font(.largeTitle)
-                            .fontWeight(.bold)
-                            .padding(.horizontal)
-
+                    VStack(alignment: .leading) {
                         WrapLayout(verticalSpacing: 15) {
                             let categoriesToShow = showAllCategories ? allCategories : Array(allCategories.prefix(initialCategoryCount))
                             
@@ -46,7 +41,7 @@ struct BrowseView: View {
                                 .padding(4)
                             }
                             
-                            // "More" / "Less" Button
+//                             "More" / "Less" Button
                             Button(action: {
                                 withAnimation(.spring()) {
                                     showAllCategories.toggle()
@@ -69,7 +64,7 @@ struct BrowseView: View {
                             .buttonStyle(PlainButtonStyle())
                             .padding(4)
                         }
-                        .padding(.horizontal)
+//                        .padding(.horizontal)
                     }
                     .padding(.top, 20)
                     .padding(.bottom, 80) // Add padding to the bottom to avoid overlap with the button
@@ -92,7 +87,15 @@ struct BrowseView: View {
                     .animation(.spring(), value: viewModel.selectedCategories.isEmpty)
                 }
             }
-            .navigationTitle("Browse")
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    VStack(alignment: .leading) {
+                        Text("Browse")
+                            .font(.system(size: 35, weight: .semibold, design: .default))
+                        Text("Choose a topic to learn")
+                    }
+                }
+            }
         }
     }
 }

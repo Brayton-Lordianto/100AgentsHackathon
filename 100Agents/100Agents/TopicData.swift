@@ -3,7 +3,7 @@ import Foundation
 
 struct TopicData {
     static let subTopics: [String: [String]] = [
-        "Computer Science": [
+        "Software": [
             "Artificial Intelligence",
             "Machine Learning",
             "Web Development",
