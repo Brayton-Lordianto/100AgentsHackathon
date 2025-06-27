@@ -74,14 +74,14 @@ struct BrowseView: View {
                     .padding(.horizontal, 5)
                 }
 
-                if !viewModel.selectedCategories.isEmpty {
-                    NavigationLink(destination: NarrowSelectionView(categories: Array(viewModel.selectedCategories))) {
-                        Text("Narrow Selection (\(viewModel.selectedCategories.count))")
+                if let firstCategory = viewModel.selectedCategories.first {
+                    NavigationLink(destination: NarrowSelectionView(category: firstCategory)) {
+                        Text("Continue with \(firstCategory.rawValue)")
                             .fontWeight(.bold)
                             .foregroundColor(.white)
                             .padding()
                             .frame(maxWidth: .infinity)
-                            .background(Color.green)
+                            .background(Color.accentColor)
                             .cornerRadius(15)
                             .shadow(radius: 10)
                     }

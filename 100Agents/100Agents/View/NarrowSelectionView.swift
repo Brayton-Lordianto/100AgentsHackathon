@@ -1,86 +1,172 @@
-
 import SwiftUI
 
-struct NarrowSelectionView: View {
-    @StateObject private var viewModel = NarrowSelectionViewModel()
-    let categories: [MainCategory]
+// MARK: - Main View
 
+struct NarrowSelectionView: View {
+    let category: MainCategory
+    
+    // Use the new ContentData model
+    private var contentSections: [TopicSection] {
+        ContentData.data[category] ?? []
+    }
+    
     var body: some View {
-        ZStack(alignment: .bottom) {
-            List {
-                ForEach(categories, id: \.self) { category in
-                    Section(header: Text(category.rawValue).font(.headline).padding(.leading, -10)) {
-                        if let subTopics = TopicData.subTopics[category.subTopicKey] {
-                            ForEach(subTopics, id: \.self) { subTopic in
-                                SubTopicRow(
-                                    title: subTopic,
-                                    isSelected: viewModel.selectedSubTopics.contains(subTopic)
-                                ) {
-                                    viewModel.toggleSubTopic(subTopic)
-                                }
-                            }
+        ScrollView {
+            VStack(alignment: .leading, spacing: 30) {
+                ForEach(contentSections) { section in
+                    // Use a switch to apply different layouts for each section
+                    switch section.title {
+                    case "🔥 Trending Now", "🎯 Popular This Week":
+                        HorizontalCarouselSection(section: section)
+                    case "📚 Fundamentals":
+                        FundamentalsSection(section: section)
+                    case "⚡ Quick Concepts (5-min reels)":
+                        QuickConceptsSection(section: section)
+                    default:
+                        // Fallback for any other sections
+                        Text(section.title).font(.title).padding(.horizontal)
+                        ForEach(section.items) { item in
+                            Text(item.title).padding(.horizontal)
                         }
                     }
                 }
-                .listRowInsets(EdgeInsets(top: 15, leading: 20, bottom: 15, trailing: 20))
             }
-            .listStyle(InsetGroupedListStyle())
-
-            if !viewModel.selectedSubTopics.isEmpty {
-                TimelineView(.animation) { timeline in
-                    NavigationLink(destination: ReelView(subTopics: Array(viewModel.selectedSubTopics))) {
-                        Text("Refine")
-                            .fontWeight(.bold)
-                            .foregroundColor(.white)
-                            .padding()
-                            .frame(maxWidth: .infinity)
-                            .background(Color.black.opacity(0.8))
-                            .clipShape(Capsule())
-                            .overlay(
-                                Capsule().stroke(Color.gray.opacity(0.5), lineWidth: 1)
-                            )
-                            .shadow(color: Color.black.opacity(0.2), radius: 10, x: 0, y: 5)
-                            .layerEffect(Shader(function: .init(library: .default, name: "premium_shimmer"), arguments: [.float(timeline.date.timeIntervalSinceReferenceDate)]), maxSampleOffset: .zero)
-                    }
-                    .buttonStyle(PlainButtonStyle())
-                    .padding(.horizontal)
-                    .padding(.bottom)
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
-                    .animation(.spring(), value: viewModel.selectedSubTopics.isEmpty)
-                }
-            }
+            .padding(.vertical)
         }
-        .navigationTitle("Refine Topics")
-        .navigationBarTitleDisplayMode(.inline)
+        .navigationTitle(category.rawValue)
+        .background(Color(.systemGroupedBackground).edgesIgnoringSafeArea(.all))
     }
 }
 
-struct SubTopicRow: View {
-    let title: String
-    let isSelected: Bool
-    let action: () -> Void
+// MARK: - Reusable Component Views
 
+struct HorizontalCarouselSection: View {
+    let section: TopicSection
+    
     var body: some View {
-        Button(action: action) {
-            HStack {
-                Text(title)
-                    .fontWeight(.medium)
-                    .foregroundColor(.primary)
-                Spacer()
-                if isSelected {
-                    Image(systemName: "checkmark.circle.fill")
-                        .foregroundColor(.green)
-                        .font(.title2)
+        VStack(alignment: .leading) {
+            Text(section.title)
+                .font(.title2).bold()
+                .padding(.horizontal)
+            
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 20) {
+                    ForEach(section.items) { item in
+                        TrendingCard(item: item)
+                    }
+                }
+                .padding(.horizontal)
+                .padding(.vertical, 10)
+            }
+        }
+    }
+}
+
+struct FundamentalsSection: View {
+    let section: TopicSection
+    
+    var body: some View {
+        VStack(alignment: .leading) {
+            Text(section.title)
+                .font(.title2).bold()
+                .padding(.horizontal)
+            
+            VStack(spacing: 15) {
+                ForEach(section.items) { item in
+                    FundamentalsRow(item: item)
                 }
             }
-            .contentShape(Rectangle())
+            .padding(.horizontal)
+        }
+    }
+}
+
+struct QuickConceptsSection: View {
+    let section: TopicSection
+    
+    var body: some View {
+        VStack(alignment: .leading) {
+            Text(section.title)
+                .font(.title2).bold()
+                .padding(.horizontal)
+            
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 15) {
+                    ForEach(section.items) { item in
+                        QuickConceptCard(item: item)
+                    }
+                }
+                .padding(.horizontal)
+                .padding(.vertical, 10)
+            }
+        }
+    }
+}
+
+// MARK: - Individual Item Views
+
+struct TrendingCard: View {
+    let item: ContentItem
+    
+    var body: some View {
+        NavigationLink(destination: ReelView(subTopics: [item.title])) {
+            VStack(alignment: .leading) {
+                Spacer()
+                Text(item.title)
+                    .font(.headline)
+                    .foregroundColor(.white)
+                    .padding()
+            }
+            .frame(width: 250, height: 150)
+            .background(LinearGradient(gradient: Gradient(colors: [.blue, .purple]), startPoint: .topLeading, endPoint: .bottomTrailing))
+            .cornerRadius(20)
+            .shadow(radius: 5)
+        }
+    }
+}
+
+struct FundamentalsRow: View {
+    let item: ContentItem
+    
+    var body: some View {
+        NavigationLink(destination: ReelView(subTopics: [item.title])) {
+            HStack {
+                Image(systemName: "book.closed.fill")
+                    .font(.title)
+                    .foregroundColor(.accentColor)
+                Text(item.title)
+                    .font(.headline)
+                Spacer()
+                Image(systemName: "chevron.right")
+            }
+            .padding()
+            .background(Color(.secondarySystemGroupedBackground))
+            .cornerRadius(15)
         }
         .buttonStyle(PlainButtonStyle())
     }
 }
 
+struct QuickConceptCard: View {
+    let item: ContentItem
+    
+    var body: some View {
+        NavigationLink(destination: ReelView(subTopics: [item.title])) {
+            Text(item.title)
+                .font(.subheadline).bold()
+                .padding()
+                .frame(width: 180, height: 100)
+                .background(Color(.secondarySystemGroupedBackground))
+                .cornerRadius(15)
+                .shadow(radius: 3)
+        }
+    }
+}
+
+// MARK: - Preview
+
 #Preview {
     NavigationView {
-        NarrowSelectionView(categories: [.computerScience, .art])
+        NarrowSelectionView(category: .physics)
     }
 }
