@@ -44,28 +44,7 @@ struct BrowseView: View {
                                 .padding(4)
                             }
                             
-                            //                             "More" / "Less" Button
-                            Button(action: {
-                                withAnimation(.spring()) {
-                                    showAllCategories.toggle()
-                                }
-                            }) {
-                                HStack {
-                                    Image(systemName: showAllCategories ? "arrow.up.right.and.arrow.down.left" : "ellipsis")
-                                    Text(showAllCategories ? "Less" : "More")
-                                        .fontWeight(.semibold)
-                                }
-                                .padding(.horizontal, 20)
-                                .padding(.vertical, 10)
-                                .background(Color.white)
-                                .clipShape(Capsule())
-                                .overlay(
-                                    Capsule().stroke(Color.gray.opacity(0.5), lineWidth: 1)
-                                )
-                                .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
-                            }
-                            .buttonStyle(PlainButtonStyle())
-                            .padding(4)
+                            moreLessButton
                         }
                             .padding(.horizontal)
                     }
@@ -74,21 +53,8 @@ struct BrowseView: View {
                     .padding(.horizontal, 5)
                 }
 
-                if let firstCategory = viewModel.selectedCategories.first {
-                    NavigationLink(destination: NarrowSelectionView(category: firstCategory)) {
-                        Text("Continue with \(firstCategory.rawValue)")
-                            .fontWeight(.bold)
-                            .foregroundColor(.white)
-                            .padding()
-                            .frame(maxWidth: .infinity)
-                            .background(Color.accentColor)
-                            .cornerRadius(15)
-                            .shadow(radius: 10)
-                    }
-                    .padding(.horizontal)
-                    .padding(.bottom)
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
-                    .animation(.spring(), value: viewModel.selectedCategories.isEmpty)
+                if viewModel.selectedCategories.count > 0 {
+                    submitButton
                 }
             }
             .toolbar {
@@ -96,11 +62,52 @@ struct BrowseView: View {
                     VStack(alignment: .leading) {
                         Text("Browse")
                             .font(.system(size: 35, weight: .semibold, design: .default))
-                        Text("Choose a topic to learn")
+                        Text("Choose a topic to learn -- or multiple!")
                     }
                 }
             }
         }
+    }
+    
+    var submitButton: some View {
+        NavigationLink(destination: NarrowSelectionView(category: viewModel.selectedCategories)) {
+            Text("Continue (\(viewModel.selectedCategories.count))")
+                .fontWeight(.bold)
+                .foregroundColor(.white)
+                .padding()
+                .frame(maxWidth: .infinity)
+                .background(Color.green)
+                .cornerRadius(15)
+                .shadow(radius: 10)
+        }
+        .padding(.horizontal)
+        .padding(.bottom)
+        .transition(.move(edge: .bottom).combined(with: .opacity))
+        .animation(.spring(), value: viewModel.selectedCategories.isEmpty)
+    }
+    
+    var moreLessButton: some View {
+        Button(action: {
+            withAnimation(.spring()) {
+                showAllCategories.toggle()
+            }
+        }) {
+            HStack {
+                Image(systemName: showAllCategories ? "arrow.up.right.and.arrow.down.left" : "ellipsis")
+                Text(showAllCategories ? "Less" : "More")
+                    .fontWeight(.semibold)
+            }
+            .padding(.horizontal, 20)
+            .padding(.vertical, 10)
+            .background(Color.white)
+            .clipShape(Capsule())
+            .overlay(
+                Capsule().stroke(Color.gray.opacity(0.5), lineWidth: 1)
+            )
+            .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
+        }
+        .buttonStyle(PlainButtonStyle())
+        .padding(4)
     }
 }
 

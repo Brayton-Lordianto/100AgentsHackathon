@@ -3,16 +3,27 @@ import SwiftUI
 // MARK: - Main View
 
 struct NarrowSelectionView: View {
-    let category: MainCategory
+    let category: Set<MainCategory>
+    var title: String {
+        category.map(\.rawValue).joined(separator: ", ")
+    }
     
     // Use the new ContentData model
     private var contentSections: [TopicSection] {
-        ContentData.data[category] ?? []
+        ///for now
+        ContentData.data[.physics] ?? []
     }
     
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 30) {
+                Text(title)
+                    .fontWeight(.semibold)
+                    .font(.title)
+                    .multilineTextAlignment(.leading)
+                    .lineLimit(nil)  // Add this line to allow unlimited lines
+                    .padding(.horizontal)
+                
                 ForEach(contentSections) { section in
                     // Use a switch to apply different layouts for each section
                     switch section.title {
@@ -33,7 +44,6 @@ struct NarrowSelectionView: View {
             }
             .padding(.vertical)
         }
-        .navigationTitle(category.rawValue)
         .background(Color(.systemGroupedBackground).edgesIgnoringSafeArea(.all))
     }
 }
@@ -167,6 +177,6 @@ struct QuickConceptCard: View {
 
 #Preview {
     NavigationView {
-        NarrowSelectionView(category: .physics)
+        NarrowSelectionView(category: Set<MainCategory>(arrayLiteral: .physics))
     }
 }
