@@ -7,11 +7,11 @@ enum MainCategory: String, CaseIterable, Identifiable {
     case physics = "Physics"
     case history = "History"
     case biology = "Biology"
-    case mathematics = "Mathematics"
     case chemistry = "Chemistry"
     case literature = "Literature"
     case music = "Music"
     case geography = "Geography"
+    case mathematics = "Mathematics"
 
     var id: String { self.rawValue }
     var icon: String {

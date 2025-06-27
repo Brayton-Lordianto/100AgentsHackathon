@@ -14,16 +14,20 @@ struct BrowseView: View {
             ZStack(alignment: .bottom) {
                 ScrollView {
                     VStack(alignment: .leading) {
-                        if !viewModel.recentCategories.isEmpty {
-                            RecentlySelectedView(recentCategories: viewModel.recentCategories) { category in
-                                viewModel.toggleCategory(category)
+                        Group {
+                            if !viewModel.recentCategories.isEmpty {
+                                RecentlySelectedView(viewModel: viewModel, recentCategories: viewModel.recentCategories) { category in
+                                    viewModel.toggleCategory(category)
+                                }
+                            } else {
+                                Color.clear
                             }
-                            
                         }
-
+                        
                         Text("Trending Topics")
-//                            .font(.system(size: 20, weight: .semibold, design: .default))
+                        //                            .font(.system(size: 20, weight: .semibold, design: .default))
                             .font(.headline)
+                            .padding(.horizontal)
                         WrapLayout(verticalSpacing: 15) {
                             let categoriesToShow = showAllCategories ? allCategories : Array(allCategories.prefix(initialCategoryCount))
                             
@@ -40,7 +44,7 @@ struct BrowseView: View {
                                 .padding(4)
                             }
                             
-//                             "More" / "Less" Button
+                            //                             "More" / "Less" Button
                             Button(action: {
                                 withAnimation(.spring()) {
                                     showAllCategories.toggle()
@@ -63,10 +67,11 @@ struct BrowseView: View {
                             .buttonStyle(PlainButtonStyle())
                             .padding(4)
                         }
-//                        .padding(.horizontal)
+                            .padding(.horizontal)
                     }
                     .padding(.top, 20)
                     .padding(.bottom, 80) // Add padding to the bottom to avoid overlap with the button
+                    .padding(.horizontal, 5)
                 }
 
                 if !viewModel.selectedCategories.isEmpty {
