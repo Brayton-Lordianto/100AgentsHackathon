@@ -107,7 +107,7 @@ struct CategoryButton: View {
     var buttonView: some View {
         Button(action: action) {
             HStack {
-                Image(systemName: isSelected ? "checkmark.circle.fill" : icon)
+                Image(systemName: icon)
                     .foregroundColor(.black)
                 Text(title)
                     .fontWeight(.semibold)
@@ -143,6 +143,7 @@ struct CategoryButton: View {
                                 maxSampleOffset: .zero
                             )
                     }
+                    .clipShape(InsettedCapsule(inset: -1)) // Clip again to ensure shimmer stays within bounds
             } else {
                 buttonView
             }
@@ -153,4 +154,13 @@ struct CategoryButton: View {
 
 #Preview {
     BrowseView()
+}
+
+struct InsettedCapsule: Shape {
+    let inset: CGFloat
+    
+    func path(in rect: CGRect) -> Path {
+        let insetRect = rect.insetBy(dx: inset, dy: inset)
+        return Capsule().path(in: insetRect)
+    }
 }

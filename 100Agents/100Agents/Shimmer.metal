@@ -14,7 +14,7 @@ using namespace metal;
     float shimmerAngle = 0.5; // 45-degree angle
     float shimmerPos = (uv.x * cos(shimmerAngle) + uv.y * sin(shimmerAngle));
     float shimmerSpeed = 0.8;
-    float shimmerWidth = 0.15;
+    float shimmerWidth = 0.1;
     
     // Animated shimmer position
     float animatedShimmer = fmod(shimmerPos - time * shimmerSpeed + 1.5, 2.0);
@@ -30,12 +30,13 @@ using namespace metal;
     edgeGlow = pow(edgeGlow, 2.0) * pulseIntensity;
     
     // Combine effects
-    half3 shimmerColor = half3(1.0, 1.0, 1.0); // Pure white shimmer
+    half3 shimmerColor = half3(1.0, 0.84, 0.0);   // Rich gold shimmer (#FFD700)
     half3 glowColor = half3(0.9, 0.95, 1.0);   // Slightly cool glow
     
     // Apply shimmer
+    float shimmerIntensity = 0.3;
     half3 finalColor = originalColor.rgb;
-    finalColor = mix(finalColor, shimmerColor, shimmerMask * 0.8);
+    finalColor = mix(finalColor, shimmerColor, shimmerMask * shimmerIntensity); 
     
     // Apply glows
     finalColor += glowColor * edgeGlow * 0.05 + half3(0,0.1,0);
