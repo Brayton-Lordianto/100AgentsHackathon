@@ -3,14 +3,14 @@ import SwiftUI
 
 struct NarrowSelectionView: View {
     @StateObject private var viewModel = NarrowSelectionViewModel()
-    let categories: [String]
+    let categories: [MainCategory]
 
     var body: some View {
         ZStack(alignment: .bottom) {
             List {
                 ForEach(categories, id: \.self) { category in
-                    Section(header: Text(category).font(.headline).padding(.leading, -10)) {
-                        if let subTopics = TopicData.subTopics[category] {
+                    Section(header: Text(category.rawValue).font(.headline).padding(.leading, -10)) {
+                        if let subTopics = TopicData.subTopics[category.subTopicKey] {
                             ForEach(subTopics, id: \.self) { subTopic in
                                 SubTopicRow(
                                     title: subTopic,
@@ -81,6 +81,6 @@ struct SubTopicRow: View {
 
 #Preview {
     NavigationView {
-        NarrowSelectionView(categories: ["Computer Science", "Art"])
+        NarrowSelectionView(categories: [.computerScience, .art])
     }
 }
