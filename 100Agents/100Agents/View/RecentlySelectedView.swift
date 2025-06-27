@@ -33,11 +33,26 @@ struct RecentlySelectedView: View {
         .padding(4)
     }
     
+    var clearButton: some View {
+        Button(action: {
+            withAnimation(.bouncy) {
+                viewModel.clearRecentCategories()
+            }
+        }) {
+            Image(systemName: "xmark.circle.fill")
+                .foregroundColor(.gray)
+        }
+    }
+    
     var body: some View {
         VStack(alignment: .leading) {
-            Text("Recently Selected")
-                .font(.headline)
-                .padding(.horizontal)
+            HStack {
+                Text("Recently Selected")
+                    .font(.headline)
+                Spacer()
+                clearButton
+            }
+            .padding(.horizontal)
 
             ScrollView(.horizontal,showsIndicators: false) {
                 HStack(spacing: 15) {

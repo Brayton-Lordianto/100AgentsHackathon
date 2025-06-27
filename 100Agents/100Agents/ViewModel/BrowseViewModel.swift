@@ -21,4 +21,8 @@ class BrowseViewModel: ObservableObject {
             recentCategories.removeLast()
         }
     }
+
+    func clearRecentCategories() {
+        recentCategories.removeAll()
+    }
 }
