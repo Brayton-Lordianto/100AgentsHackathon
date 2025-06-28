@@ -1,0 +1,7 @@
+pydantic_ai
+manim
+moviepy
+pydantic
+nest_asyncio
+fastapi
+uvicorn
