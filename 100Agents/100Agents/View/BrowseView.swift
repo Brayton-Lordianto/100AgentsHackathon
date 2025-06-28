@@ -3,6 +3,7 @@ import SwiftUI
 
 struct BrowseView: View {
     @StateObject private var viewModel = BrowseViewModel()
+    @StateObject private var mcpService = MCPService()
     
     let allCategories = MainCategory.allCases
     
@@ -98,8 +99,11 @@ struct BrowseView: View {
     
     var moreLessButton: some View {
         Button(action: {
-            withAnimation(.spring()) {
-                showAllCategories.toggle()
+//            withAnimation(.spring()) {
+//                showAllCategories.toggle()
+//            }
+            Task {
+                await mcpService.connectToAppWrite()
             }
         }) {
             HStack {

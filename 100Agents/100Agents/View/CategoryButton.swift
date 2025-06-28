@@ -13,8 +13,15 @@ struct CategoryButton: View {
     let isSelected: Bool
     let action: () -> Void
     
+    let shimmerDuration: TimeInterval = 2
+    @State private var shimmerStartTime: Date?
+    @State private var isShimmering = false
+    
     var buttonView: some View {
-        Button(action: action) {
+        Button(action: {
+            action();
+            triggerShimmer()
+        }) {
             HStack {
                 Image(systemName: icon)
                     .foregroundColor(.black)
@@ -24,7 +31,7 @@ struct CategoryButton: View {
             }
             .padding(.horizontal, 20)
             .padding(.vertical, 10)
-            .background(isSelected ? Color.mint.opacity(0.5) : Color.white)
+            .background(isSelected ? Color.mint.opacity(0.1) : Color.white)
             .clipShape(Capsule())
             .overlay(
                 Capsule().stroke(Color.gray.opacity(0.5), lineWidth: 1)
@@ -36,27 +43,36 @@ struct CategoryButton: View {
     }
     
     let startDate = Date()
-
-
-    var body: some View {
+    
+    var timelineView: some View {
         TimelineView(.animation) { timeline in
-            if isSelected {
-                buttonView
-                    .visualEffect { content, proxy in
-                        content
-                            .layerEffect(
-                                ShaderLibrary.premium_shimmer(
-                                    .float(startDate.timeIntervalSinceNow),
-                                    .float2(proxy.size)
-                                ),
-                                maxSampleOffset: .zero
-                            )
-                    }
-                    .clipShape(InsettedCapsule(inset: -1)) // Clip again to ensure shimmer stays within bounds
-            } else {
-                buttonView
-            }
+            let currentTime = timeline.date.timeIntervalSince(shimmerStartTime ?? Date())
+            buttonView
+                .visualEffect { content, proxy in
+                    content
+                        .layerEffect(
+                            ShaderLibrary.premium_shimmer(
+                                .float(currentTime),
+                                .float2(proxy.size),
+                                .float(shimmerDuration)
+                            ),
+                            maxSampleOffset: .zero
+                        )
+                }
+                .clipShape(InsettedCapsule(inset: -1)) // Clip again to ensure shimmer stays within bounds
         }
+    }
+    
+    var body: some View {
+        if !isSelected { buttonView }
+        else {
+            timelineView
+        }
+    }
+    
+    private func triggerShimmer() {
+        shimmerStartTime = Date()
+        isShimmering.toggle()
     }
 }
 
