@@ -24,7 +24,7 @@ struct BrowseView: View {
                             }
                         }
                         
-                        Text("Trending Topics")
+                        trendingTopicsLabel
                         //                            .font(.system(size: 20, weight: .semibold, design: .default))
                             .font(.headline)
                             .padding(.horizontal)
@@ -66,6 +66,16 @@ struct BrowseView: View {
                     }
                 }
             }
+        }
+    }
+    
+    var trendingTopicsLabel: some View {
+        HStack {
+            Image(systemName: "flame.fill")
+                .foregroundColor(.orange)
+            Text("Trending Topics")
+                .font(.title2)
+                .fontWeight(.semibold)
         }
     }
     

@@ -8,6 +8,7 @@ struct ContentView: View {
                     Image(systemName: "square.grid.2x2")
                     Text("Browse")
                 }
+                .background(Color.gray.opacity(0.2))
 
             HistoryView()
                 .tabItem {

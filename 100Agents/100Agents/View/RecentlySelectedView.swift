@@ -41,14 +41,16 @@ struct RecentlySelectedView: View {
         }) {
             Image(systemName: "xmark.circle.fill")
                 .foregroundColor(.gray)
+                .font(.title3)
         }
     }
     
     var body: some View {
         VStack(alignment: .leading) {
             HStack {
-                Text("Recently Selected")
-                    .font(.headline)
+                Text("Recently Viewed")
+                    .font(.title2)
+                    .fontWeight(.semibold)
                 Spacer()
                 clearButton
             }

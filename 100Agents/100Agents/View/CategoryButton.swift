@@ -24,7 +24,7 @@ struct CategoryButton: View {
             }
             .padding(.horizontal, 20)
             .padding(.vertical, 10)
-            .background(Color.white)
+            .background(isSelected ? Color.mint.opacity(0.5) : Color.white)
             .clipShape(Capsule())
             .overlay(
                 Capsule().stroke(Color.gray.opacity(0.5), lineWidth: 1)

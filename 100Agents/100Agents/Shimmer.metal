@@ -11,7 +11,7 @@ using namespace metal;
     float2 uv = position / size;
     
     // Create animated shimmer band that moves diagonally
-    float shimmerAngle = 0.5; // 45-degree angle
+    float shimmerAngle = M_PI_F / 4.0; 
     float shimmerPos = (uv.x * cos(shimmerAngle) + uv.y * sin(shimmerAngle));
     float shimmerSpeed = 0.8;
     float shimmerWidth = 0.1;
