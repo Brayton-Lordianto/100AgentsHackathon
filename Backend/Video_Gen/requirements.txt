@@ -1,0 +1,15 @@
+Crawl4AI
+Flask
+uvicorn
+asgiref
+pysrt
+pydantic-ai
+requests
+PyMuPDF
+quart
+Pillow
+playwright
+python-dotenv
+aiofiles
+httpx
+pydantic

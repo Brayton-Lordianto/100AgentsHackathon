@@ -242,19 +242,7 @@ with open("derivatives_tutorial.mp4", "wb") as f:
 - **pydantic**: Data validation
 - **nest_asyncio**: Async support
 
-## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## 📄 License
-
-This project is licensed under the terms specified in the LICENSE file.
-
-## 🙏 Acknowledgments
-
-- [Manim Community](https://www.manim.community/) for the animation engine
-- [Google Gemini](https://ai.google.dev/) for AI capabilities
-- [FastAPI](https://fastapi.tiangolo.com/) for the web framework
 
 ---
 
