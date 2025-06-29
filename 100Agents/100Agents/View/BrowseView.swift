@@ -1,5 +1,6 @@
 
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct BrowseView: View {
     @StateObject private var viewModel = BrowseViewModel()
@@ -9,6 +10,8 @@ struct BrowseView: View {
     
     let initialCategoryCount = 5
     @State private var showAllCategories = false
+    @State private var urlText = ""
+    @State private var showingFilePicker = false
 
     var body: some View {
         NavigationView {
@@ -56,6 +59,8 @@ struct BrowseView: View {
 
                 if viewModel.selectedCategories.count > 0 {
                     submitButton
+                } else {
+                    alternativeOptionsSection
                 }
             }
             .toolbar {
@@ -99,11 +104,8 @@ struct BrowseView: View {
     
     var moreLessButton: some View {
         Button(action: {
-//            withAnimation(.spring()) {
-//                showAllCategories.toggle()
-//            }
-            Task {
-                await mcpService.connectToAppWrite()
+            withAnimation(.spring()) {
+                showAllCategories.toggle()
             }
         }) {
             HStack {
@@ -122,6 +124,140 @@ struct BrowseView: View {
         }
         .buttonStyle(PlainButtonStyle())
         .padding(4)
+    }
+    
+    var alternativeOptionsSection: some View {
+        VStack(spacing: 15) {
+            orDivider
+            
+            pdfUploadButton
+            
+            orDivider
+            
+            urlEntrySection
+        }
+        .padding(.horizontal)
+        .padding(.bottom)
+        .transition(.move(edge: .bottom).combined(with: .opacity))
+        .animation(.spring(), value: viewModel.selectedCategories.isEmpty)
+    }
+    
+    var pdfUploadButton: some View {
+        Button(action: {
+            showingFilePicker = true
+        }) {
+            HStack {
+                Image(systemName: "doc.fill")
+                Text("Upload PDF")
+                    .fontWeight(.bold)
+            }
+            .foregroundColor(.black)
+            .padding()
+            .frame(maxWidth: .infinity)
+            .background(Color.white)
+            .cornerRadius(15)
+            .overlay(
+                RoundedRectangle(cornerRadius: 15)
+                    .stroke(Color.black.opacity(0.2), lineWidth: 1)
+            )
+            .shadow(color: Color.black.opacity(0.3), radius: 2, x: 0, y: 1)
+            .shadow(color: Color.black.opacity(0.15), radius: 8, x: 0, y: 6)
+        }
+        .fileImporter(
+            isPresented: $showingFilePicker,
+            allowedContentTypes: [.pdf],
+            allowsMultipleSelection: false
+        ) { result in
+            handlePDFSelection(result)
+        }
+    }
+    
+    var orDivider: some View {
+        HStack {
+            Rectangle()
+                .frame(height: 1)
+                .foregroundColor(.black.opacity(0.3))
+            
+            Text("OR")
+                .foregroundColor(.gray)
+                .fontWeight(.medium)
+                .padding(.horizontal, 10)
+            
+            Rectangle()
+                .frame(height: 1)
+                .foregroundColor(.black.opacity(0.3))
+        }
+    }
+    
+    var urlEntrySection: some View {
+        HStack(spacing: 12) {
+            // URL Input Field with Notion styling
+            HStack {
+                Image(systemName: "link")
+                    .foregroundColor(.gray)
+                    .frame(width: 20)
+                
+                TextField("Paste article URL here...", text: $urlText)
+                    .autocapitalization(.none)
+                    .disableAutocorrection(true)
+                    .textFieldStyle(PlainTextFieldStyle())
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .background(Color.white)
+            .cornerRadius(12)
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(urlText.isEmpty ? Color.gray.opacity(0.3) : Color.blue.opacity(0.5), lineWidth: 1.5)
+            )
+            .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
+            .animation(.easeInOut(duration: 0.2), value: urlText.isEmpty)
+            
+            urlEntrySubmitButton
+        }
+    }
+    
+    var urlEntrySubmitButton: some View {
+        Button(action: {
+            handleURLSubmission()
+        }) {
+            HStack(spacing: 8) {
+                Image(systemName: "wand.and.stars")
+            }
+            .foregroundColor(.black)
+            .padding(.horizontal, 24)
+            .padding(.vertical, 12)
+//                    .background(urlText.isEmpty ? Color.gray.opacity(0.1) : Color.white)
+            .cornerRadius(12)
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(urlText.isEmpty ? Color.gray.opacity(0.2) : Color.black.opacity(0.2), lineWidth: 1)
+            )
+            .shadow(color: urlText.isEmpty ? Color.clear : Color.black.opacity(0.2), radius: 2, x: 0, y: 1)
+            .shadow(color: urlText.isEmpty ? Color.clear : Color.black.opacity(0.1), radius: 6, x: 0, y: 4)
+            .scaleEffect(urlText.isEmpty ? 0.95 : 1.0)
+            .animation(.spring(response: 0.3, dampingFraction: 0.7), value: urlText.isEmpty)
+        }
+        .disabled(urlText.isEmpty)
+
+    }
+    
+    private func handlePDFSelection(_ result: Result<[URL], Error>) {
+        switch result {
+        case .success(let urls):
+            if let url = urls.first {
+                // TODO: Navigate to reel generation with PDF
+                print("PDF selected: \(url)")
+            }
+        case .failure(let error):
+            print("Error selecting PDF: \(error)")
+        }
+    }
+    
+    private func handleURLSubmission() {
+        guard !urlText.isEmpty else { return }
+        // TODO: Navigate to reel generation with URL
+        print("URL submitted: \(urlText)")
     }
 }
 
