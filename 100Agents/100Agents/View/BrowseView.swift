@@ -158,10 +158,12 @@ struct BrowseView: View {
             .cornerRadius(15)
             .overlay(
                 RoundedRectangle(cornerRadius: 15)
-                    .stroke(Color.black.opacity(0.2), lineWidth: 1)
+                    .stroke(Color.black.opacity(0.1), lineWidth: 1)
             )
-            .shadow(color: Color.black.opacity(0.3), radius: 2, x: 0, y: 1)
-            .shadow(color: Color.black.opacity(0.15), radius: 8, x: 0, y: 6)
+            // 3D embossed effect
+            .shadow(color: Color.white.opacity(0.8), radius: 1, x: 0, y: -1) // Top highlight
+            .shadow(color: Color.black.opacity(0.8), radius: 2, x: 0, y: 2) // Bottom shadow
+            .shadow(color: Color.black.opacity(0.1), radius: 6, x: 0, y: 4) // Deeper bottom shadow
         }
         .fileImporter(
             isPresented: $showingFilePicker,
@@ -208,9 +210,12 @@ struct BrowseView: View {
             .cornerRadius(12)
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
-                    .stroke(urlText.isEmpty ? Color.gray.opacity(0.3) : Color.blue.opacity(0.5), lineWidth: 1.5)
+                    .stroke(urlText.isEmpty ? Color.gray.opacity(0.2) : Color.blue.opacity(0.3), lineWidth: 1)
             )
-            .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
+            // 3D embossed effect for text field
+            .shadow(color: Color.white.opacity(0.8), radius: 1, x: 0, y: -1) // Top highlight
+            .shadow(color: Color.black.opacity(0.8), radius: 2, x: 0, y: 2) // Bottom shadow
+            .shadow(color: Color.black.opacity(0.08), radius: 4, x: 0, y: 3) // Deeper bottom shadow
             .animation(.easeInOut(duration: 0.2), value: urlText.isEmpty)
             
             urlEntrySubmitButton
