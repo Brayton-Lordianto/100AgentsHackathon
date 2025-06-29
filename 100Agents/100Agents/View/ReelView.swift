@@ -5,6 +5,7 @@ import AVKit
 struct ReelView: View {
     let title: String
     let videoURL: URL?
+    let isActive: Bool
     
     @State private var player: AVPlayer?
     @State private var isPlaying = true
@@ -14,6 +15,12 @@ struct ReelView: View {
     @State private var dragValue: Double = 0
     @State private var showShareSheet = false
     @State private var showManimModal = false
+    
+    init(title: String, videoURL: URL?, isActive: Bool = true) {
+        self.title = title
+        self.videoURL = videoURL
+        self.isActive = isActive
+    }
     
     var body: some View {
         GeometryReader { geometry in
@@ -41,6 +48,15 @@ struct ReelView: View {
         }
         .onDisappear {
             player?.pause()
+        }
+        .onChange(of: isActive) { active in
+            if active && player != nil {
+                player?.play()
+                isPlaying = true
+            } else {
+                player?.pause()
+                isPlaying = false
+            }
         }
         .onReceive(NotificationCenter.default.publisher(for: .AVPlayerItemDidPlayToEndTime)) { _ in
             player?.seek(to: .zero)
@@ -130,12 +146,14 @@ struct ReelView: View {
         .sheet(isPresented: $showShareSheet) {
             if let videoURL = videoURL {
                 ShareSheet(activityItems: [videoURL])
+                    .presentationDetents([.medium, .large])
             }
         }
         .sheet(isPresented: $showManimModal) {
             ManimModalView(title: title, onDismiss: {
                 showManimModal = false
             })
+            .presentationDetents([.medium, .large])
         }
     }
     
@@ -179,8 +197,13 @@ struct ReelView: View {
         
         player = AVPlayer(url: url)
         
-        player?.play()
-        isPlaying = true
+        // Only auto-play if this reel is active
+        if isActive {
+            player?.play()
+            isPlaying = true
+        } else {
+            isPlaying = false
+        }
         
         let interval = CMTime(seconds: 0.1, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
         player?.addPeriodicTimeObserver(forInterval: interval, queue: .main) { time in
@@ -276,13 +299,18 @@ struct ManimModalView: View {
                             .font(.headline)
                     }
                 } else if let player = manimPlayer {
-                    VideoPlayer(player: player)
-                        .ignoresSafeArea()
+                    VStack {
+                        Text(title + " Visualization")
+                            .foregroundStyle(.white)
+                        VideoPlayer(player: player)
+                            .ignoresSafeArea()
+                    }
                 } else {
                     VStack(spacing: 20) {
                         Image(systemName: "sparkles")
                             .font(.system(size: 60))
                             .foregroundColor(.cyan)
+                            .glow()
                         
                         Text("Visualization Not Available")
                             .foregroundColor(.white)
@@ -363,7 +391,8 @@ extension View {
 
 #Preview {
     ReelView(
-        title: "Complex Numbers Visualization",
-        videoURL: Bundle.main.url(forResource: "complexNumbers", withExtension: "mp4")
+        title: "Complex Numbers",
+        videoURL: Bundle.main.url(forResource: "complexNumbers", withExtension: "mp4"),
+        isActive: true
     )
 }

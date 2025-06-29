@@ -62,7 +62,7 @@ struct HorizontalCarouselSection: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 20) {
                     ForEach(section.items) { item in
-                        TrendingCard(item: item)
+                        TrendingCard(item: item, allItems: section.items)
                     }
                 }
                 .padding(.horizontal)
@@ -83,7 +83,7 @@ struct FundamentalsSection: View {
             
             VStack(spacing: 15) {
                 ForEach(section.items) { item in
-                    FundamentalsRow(item: item)
+                    FundamentalsRow(item: item, allItems: section.items)
                 }
             }
             .padding(.horizontal)
@@ -103,7 +103,7 @@ struct QuickConceptsSection: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 15) {
                     ForEach(section.items) { item in
-                        QuickConceptCard(item: item)
+                        QuickConceptCard(item: item, allItems: section.items)
                     }
                 }
                 .padding(.horizontal)
@@ -117,9 +117,14 @@ struct QuickConceptsSection: View {
 
 struct TrendingCard: View {
     let item: ContentItem
+    let allItems: [ContentItem]
     
     var body: some View {
-        NavigationLink(destination: ReelView(title: item.title, videoURL: getVideoURL(for: item.title))) {
+        NavigationLink(destination: {
+            let reels = ReelsContainerView.createReelsFromContentItems(allItems)
+            let startingIndex = allItems.firstIndex { $0.id == item.id } ?? 0
+            return ReelsContainerView(reels: reels, startingIndex: startingIndex)
+        }()) {
             VStack(alignment: .leading) {
                 Spacer()
                 Text(item.title)
@@ -137,9 +142,14 @@ struct TrendingCard: View {
 
 struct FundamentalsRow: View {
     let item: ContentItem
+    let allItems: [ContentItem]
     
     var body: some View {
-        NavigationLink(destination: ReelView(title: item.title, videoURL: getVideoURL(for: item.title))) {
+        NavigationLink(destination: {
+            let reels = ReelsContainerView.createReelsFromContentItems(allItems)
+            let startingIndex = allItems.firstIndex { $0.id == item.id } ?? 0
+            return ReelsContainerView(reels: reels, startingIndex: startingIndex)
+        }()) {
             HStack {
                 Image(systemName: "book.closed.fill")
                     .font(.title)
@@ -159,9 +169,14 @@ struct FundamentalsRow: View {
 
 struct QuickConceptCard: View {
     let item: ContentItem
+    let allItems: [ContentItem]
     
     var body: some View {
-        NavigationLink(destination: ReelView(title: item.title, videoURL: getVideoURL(for: item.title))) {
+        NavigationLink(destination: {
+            let reels = ReelsContainerView.createReelsFromContentItems(allItems)
+            let startingIndex = allItems.firstIndex { $0.id == item.id } ?? 0
+            return ReelsContainerView(reels: reels, startingIndex: startingIndex)
+        }()) {
             Text(item.title)
                 .font(.subheadline).bold()
                 .padding()
