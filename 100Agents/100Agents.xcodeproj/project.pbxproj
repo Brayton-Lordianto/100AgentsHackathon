@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		414996032E11DD4C0091F193 /* Appwrite in Frameworks */ = {isa = PBXBuildFile; productRef = 414996022E11DD4C0091F193 /* Appwrite */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		418E7EA12E0DC39E001C54EF /* 100Agents.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = 100Agents.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -23,6 +27,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				414996032E11DD4C0091F193 /* Appwrite in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -65,6 +70,7 @@
 			);
 			name = 100Agents;
 			packageProductDependencies = (
+				414996022E11DD4C0091F193 /* Appwrite */,
 			);
 			productName = 100Agents;
 			productReference = 418E7EA12E0DC39E001C54EF /* 100Agents.app */;
@@ -95,6 +101,7 @@
 			mainGroup = 418E7E982E0DC39E001C54EF;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
+				414996012E11DD4C0091F193 /* XCRemoteSwiftPackageReference "sdk-for-swift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 418E7EA22E0DC39E001C54EF /* Products */;
@@ -328,6 +335,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		414996012E11DD4C0091F193 /* XCRemoteSwiftPackageReference "sdk-for-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/appwrite/sdk-for-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 10.1.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		414996022E11DD4C0091F193 /* Appwrite */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 414996012E11DD4C0091F193 /* XCRemoteSwiftPackageReference "sdk-for-swift" */;
+			productName = Appwrite;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 418E7E992E0DC39E001C54EF /* Project object */;
 }
