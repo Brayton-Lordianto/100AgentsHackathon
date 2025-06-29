@@ -93,3 +93,6 @@ htmlcov/
 # Logs
 *.log
 logs/ 
+
+100Agents/media/
+*.xcuserstate
