@@ -12,6 +12,8 @@ struct ReelView: View {
     @State private var duration: Double = 0
     @State private var isDragging = false
     @State private var dragValue: Double = 0
+    @State private var showShareSheet = false
+    @State private var showManimModal = false
     
     var body: some View {
         GeometryReader { geometry in
@@ -53,39 +55,87 @@ struct ReelView: View {
     }
     
     func videoOverlay(_ geometry: GeometryProxy) -> some View {
-        VStack {
-            
-            Spacer()
-            
-            // Custom progress bar at bottom
-            VStack(spacing: 8) {
-                HStack {
-                    Text(title)
-                        .font(.headline)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.white)
-                        .shadow(color: .black.opacity(0.5), radius: 2)
-                    Spacer()
+        ZStack {
+            VStack {
+                
+                Spacer()
+                
+                // Custom progress bar at bottom
+                VStack(spacing: 8) {
+                    HStack {
+                        Text(title)
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.white)
+                            .shadow(color: .black.opacity(0.5), radius: 2)
+                        Spacer()
+                    }
+                    .padding(.top, 60)
+                    
+                    progressBar(geometry)
+                        .highPriorityGesture(
+                            DragGesture(minimumDistance: 0)
+                                .onChanged { value in
+                                    isDragging = true
+                                    let newValue = Double(value.location.x / geometry.size.width)
+                                    dragValue = max(0, min(1, newValue))
+                                }
+                                .onEnded { _ in
+                                    isDragging = false
+                                    seekToTime(dragValue * duration)
+                                }
+                        )
+                    
                 }
-                .padding(.top, 60)
-                
-                progressBar(geometry)
-                    .highPriorityGesture(
-                        DragGesture(minimumDistance: 0)
-                            .onChanged { value in
-                                isDragging = true
-                                let newValue = Double(value.location.x / geometry.size.width)
-                                dragValue = max(0, min(1, newValue))
-                            }
-                            .onEnded { _ in
-                                isDragging = false
-                                seekToTime(dragValue * duration)
-                            }
-                    )
-                
+                .padding(.horizontal)
+                .padding(.bottom, 40)
             }
-            .padding(.horizontal)
-            .padding(.bottom, 40)
+            
+            // Action buttons on the right side
+            VStack {
+                Spacer()
+                
+                VStack(spacing: 20) {
+                    // Share button
+                    Button(action: {
+                        showShareSheet = true
+                    }) {
+                        Image(systemName: "square.and.arrow.up")
+                            .font(.title2)
+                            .foregroundColor(.white)
+                            .frame(width: 44, height: 44)
+                            .background(Color.black.opacity(0.3))
+                            .clipShape(Circle())
+                            .shadow(color: .black.opacity(0.3), radius: 3)
+                    }
+                    
+                    // Manim version button (twinkle stars)
+                    Button(action: {
+                        showManimModal = true
+                    }) {
+                        Image(systemName: "sparkles")
+                            .font(.title2)
+                            .foregroundColor(.white)
+                            .frame(width: 44, height: 44)
+                            .background(Color.black.opacity(0.3))
+                            .clipShape(Circle())
+                            .shadow(color: .black.opacity(0.3), radius: 3)
+                    }
+                }
+                .padding(.trailing, 20)
+                .padding(.bottom, 120) // Above progress bar
+            }
+            .frame(maxWidth: .infinity, alignment: .trailing)
+        }
+        .sheet(isPresented: $showShareSheet) {
+            if let videoURL = videoURL {
+                ShareSheet(activityItems: [videoURL])
+            }
+        }
+        .sheet(isPresented: $showManimModal) {
+            ManimModalView(title: title, onDismiss: {
+                showManimModal = false
+            })
         }
     }
     
@@ -162,6 +212,118 @@ struct ReelView: View {
         let minutes = Int(time) / 60
         let seconds = Int(time) % 60
         return String(format: "%d:%02d", minutes, seconds)
+    }
+}
+
+// MARK: - Share Sheet
+struct ShareSheet: UIViewControllerRepresentable {
+    let activityItems: [Any]
+    
+    func makeUIViewController(context: Context) -> UIActivityViewController {
+        UIActivityViewController(activityItems: activityItems, applicationActivities: nil)
+    }
+    
+    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
+}
+
+// MARK: - Manim Modal View
+struct ManimModalView: View {
+    let title: String
+    let onDismiss: () -> Void
+    @State private var manimPlayer: AVPlayer?
+    @State private var isLoading = true
+    
+    private var manimVideoURL: URL? {
+        // Map title to corresponding Manim video
+        let mapping: [String: String] = [
+            "Complex Numbers": "complexNumbersManim",
+            "Pythagorean Theorem": "pythagoreanTheoremManim",
+            "Quadratic Functions": "quadraticFunctionManim",
+            "Unit Circle": "unitCircleManim",
+            "3D Surface Plots": "surfacePlotManim",
+            "Sphere Volume": "sphereVolumeManim",
+            "Cube Surface Area": "cubeSurfaceAreaManim",
+            "Derivatives": "derivativesManim",
+            "Matrix Operations": "matrixOperationsManim",
+            "Eigenvalues": "eigenvaluesManim"
+        ]
+        
+        // Find best match
+        let bestMatch = mapping.keys.first { key in
+            title.lowercased().contains(key.lowercased()) || key.lowercased().contains(title.lowercased())
+        }
+        
+        if let match = bestMatch, let videoName = mapping[match] {
+            return Bundle.main.url(forResource: videoName, withExtension: "mp4")
+        }
+        
+        return nil
+    }
+    
+    var body: some View {
+        NavigationView {
+            ZStack {
+                Color.black.ignoresSafeArea()
+                
+                if isLoading {
+                    VStack(spacing: 20) {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .cyan))
+                            .scaleEffect(1.5)
+                        
+                        Text("Loading Visualization...")
+                            .foregroundColor(.white)
+                            .font(.headline)
+                    }
+                } else if let player = manimPlayer {
+                    VideoPlayer(player: player)
+                        .ignoresSafeArea()
+                } else {
+                    VStack(spacing: 20) {
+                        Image(systemName: "sparkles")
+                            .font(.system(size: 60))
+                            .foregroundColor(.cyan)
+                        
+                        Text("Visualization Not Available")
+                            .foregroundColor(.white)
+                            .font(.title2)
+                            .fontWeight(.semibold)
+                        
+                        Text("The mathematical visualization for this video is not yet available.")
+                            .foregroundColor(.gray)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal)
+                    }
+                }
+            }
+            .navigationTitle("Visualization")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Done") {
+                        manimPlayer?.pause()
+                        onDismiss()
+                    }
+                    .foregroundColor(.cyan)
+                }
+            }
+        }
+        .onAppear {
+            setupManimPlayer()
+        }
+        .onDisappear {
+            manimPlayer?.pause()
+        }
+    }
+    
+    private func setupManimPlayer() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            if let url = manimVideoURL {
+                manimPlayer = AVPlayer(url: url)
+                manimPlayer?.play()
+            }
+            isLoading = false
+        }
     }
 }
 
