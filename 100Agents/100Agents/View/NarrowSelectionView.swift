@@ -119,7 +119,7 @@ struct TrendingCard: View {
     let item: ContentItem
     
     var body: some View {
-        NavigationLink(destination: ReelView(subTopics: [item.title])) {
+        NavigationLink(destination: ReelView(title: item.title, videoURL: getVideoURL(for: item.title))) {
             VStack(alignment: .leading) {
                 Spacer()
                 Text(item.title)
@@ -139,7 +139,7 @@ struct FundamentalsRow: View {
     let item: ContentItem
     
     var body: some View {
-        NavigationLink(destination: ReelView(subTopics: [item.title])) {
+        NavigationLink(destination: ReelView(title: item.title, videoURL: getVideoURL(for: item.title))) {
             HStack {
                 Image(systemName: "book.closed.fill")
                     .font(.title)
@@ -161,7 +161,7 @@ struct QuickConceptCard: View {
     let item: ContentItem
     
     var body: some View {
-        NavigationLink(destination: ReelView(subTopics: [item.title])) {
+        NavigationLink(destination: ReelView(title: item.title, videoURL: getVideoURL(for: item.title))) {
             Text(item.title)
                 .font(.subheadline).bold()
                 .padding()
@@ -171,6 +171,36 @@ struct QuickConceptCard: View {
                 .shadow(radius: 3)
         }
     }
+}
+
+// MARK: - Helper Functions
+
+func getVideoURL(for title: String) -> URL? {
+    // Map content titles to actual video files
+    let videoMapping: [String: String] = [
+        "Complex Numbers": "complexNumbers",
+        "Pythagorean Theorem": "pythagoreanTheorem",
+        "Quadratic Functions": "quadraticFunction",
+        "Unit Circle": "unitCircle",
+        "3D Surface Plots": "surfacePlot",
+        "Sphere Volume": "sphereVolume",
+        "Cube Surface Area": "cubeSurfaceArea",
+        "Derivatives": "derivatives",
+        "Matrix Operations": "matrixOperations",
+        "Eigenvalues": "eigenvalues"
+    ]
+    
+    // Find the best match (case-insensitive, partial matching)
+    let bestMatch = videoMapping.keys.first { key in
+        title.lowercased().contains(key.lowercased()) || key.lowercased().contains(title.lowercased())
+    }
+    
+    if let match = bestMatch, let videoName = videoMapping[match] {
+        return Bundle.main.url(forResource: videoName, withExtension: "mp4", subdirectory: "100_agents_videos")
+    }
+    
+    // Fallback to first available video
+    return Bundle.main.url(forResource: "complexNumbers", withExtension: "mp4", subdirectory: "100_agents_videos")
 }
 
 // MARK: - Preview

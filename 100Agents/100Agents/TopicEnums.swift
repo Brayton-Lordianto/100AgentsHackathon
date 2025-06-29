@@ -107,3 +107,43 @@ enum SubTopic: String, CaseIterable, Identifiable {
 
     var id: String { self.rawValue }
 }
+
+enum DemoVideo: String, CaseIterable, Identifiable {
+    case pythagoreanTheorem = "pythagoreanTheorem"
+    case quadraticFunction = "quadraticFunction"
+    case unitCircle = "unitCircle"
+    case surfacePlot = "surfacePlot"
+    case sphereVolume = "sphereVolume"
+    case cubeSurfaceArea = "cubeSurfaceArea"
+    case derivatives = "derivatives"
+    case matrixOperations = "matrixOperations"
+    case eigenvalues = "eigenvalues"
+    case complexNumbers = "complexNumbers"
+    
+    var id: String { self.rawValue }
+    
+    var prompt: String {
+        switch self {
+        case .pythagoreanTheorem:
+            return "Demonstrate the Pythagorean theorem with animated triangle and squares"
+        case .quadraticFunction:
+            return "Visualize a quadratic function and its properties with animation"
+        case .unitCircle:
+            return "Show how sine and cosine are related on the unit circle with animated angle"
+        case .surfacePlot:
+            return "Create a 3D surface plot showing z = x^2 + y^2"
+        case .sphereVolume:
+            return "Calculate and visualize the volume of a sphere with radius r"
+        case .cubeSurfaceArea:
+            return "Show how to find the surface area of a cube with animations"
+        case .derivatives:
+            return "Visualize derivatives as the slope of a tangent line"
+        case .matrixOperations:
+            return "Demonstrate matrix operations with animated transformations"
+        case .eigenvalues:
+            return "Visualize eigenvalues and eigenvectors of a 2x2 matrix"
+        case .complexNumbers:
+            return "Show how complex numbers multiply using rotation and scaling"
+        }
+    }
+}
