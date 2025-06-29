@@ -120,8 +120,6 @@ struct ReelView: View {
                             .font(.title2)
                             .foregroundColor(.white)
                             .frame(width: 44, height: 44)
-                            .background(Color.black.opacity(0.3))
-                            .clipShape(Circle())
                             .shadow(color: .black.opacity(0.3), radius: 3)
                     }
                     
@@ -133,8 +131,6 @@ struct ReelView: View {
                             .font(.title2)
                             .foregroundColor(.white)
                             .frame(width: 44, height: 44)
-                            .background(Color.black.opacity(0.3))
-                            .clipShape(Circle())
                             .shadow(color: .black.opacity(0.3), radius: 3)
                     }
                 }
@@ -176,6 +172,7 @@ struct ReelView: View {
                 .frame(width: CGFloat(progressValue) * geometry.size.width, height: 3)
                 .glow(radius: 0.5)
             
+            // Draggable circle
             Circle()
                 .fill(
                     RadialGradient(
@@ -186,8 +183,20 @@ struct ReelView: View {
                     )
                 )
                 .frame(width: 8, height: 8)
+                .scaleEffect(isDragging ? 1.5 : 1.0)
                 .glow()
                 .offset(x: CGFloat(progressValue) * geometry.size.width)
+            
+            Text(formatTime(dragValue * duration))
+                .font(.caption)
+                .foregroundColor(.white)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 4)
+                .background(Color.black.opacity(0.7))
+                .cornerRadius(4)
+                .offset(x: CGFloat(progressValue) * geometry.size.width)
+                .offset(y: -35)
+                .opacity(isDragging ? 1 : 0)
         }
     }
 
