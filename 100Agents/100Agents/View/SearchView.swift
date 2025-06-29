@@ -18,29 +18,28 @@ struct SearchView: View {
             VStack(alignment: .leading, spacing: 16) {
                 Text("Search")
                     .font(.largeTitle.bold())
-                    .padding(.top, 32)
+                    .padding(.top, 30)
                     .padding(.horizontal)
 
-                HStack(spacing: 8) {
+                HStack {
                     TextField("Search topics...", text: $query, onCommit: performSearch)
-                        .textFieldStyle(.roundedBorder)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
                         .padding(.leading)
-                        .frame(height: 36)
 
                     Button(action: performSearch) {
                         Image(systemName: "magnifyingglass")
                             .foregroundColor(.white)
-                            .padding(10)
-                            .background(Color.accentColor)
+                            .padding(8)
+                            .background(Color.blue)
                             .clipShape(Circle())
                     }
                     .disabled(query.trimmingCharacters(in: .whitespaces).isEmpty)
-                    .padding(.trailing)
                 }
+                .padding(.horizontal)
 
                 if isLoading {
                     ProgressView("Searching...")
-                        .padding(.leading)
+                        .padding()
                 } else if !searchResults.isEmpty {
                     ScrollView {
                         VStack(alignment: .leading, spacing: 12) {
@@ -48,91 +47,85 @@ struct SearchView: View {
                                 Button(action: {
                                     selectedResult = result
                                 }) {
-                                    VStack(alignment: .leading, spacing: 6) {
+                                    VStack(alignment: .leading, spacing: 4) {
                                         Text(result.title)
                                             .font(.headline)
-                                            .foregroundColor(.primary)
+                                            .foregroundColor(.white)
 
                                         Text(result.url)
                                             .font(.caption)
                                             .foregroundColor(.blue)
 
                                         if let content = result.content {
-                                            Text(String(content.prefix(100)) + "…")
+                                            Text(content.prefix(100) + "…")
                                                 .font(.subheadline)
                                                 .foregroundColor(.gray)
                                         }
                                     }
                                     .padding()
-                                    .background(Color(.secondarySystemBackground))
-                                    .cornerRadius(12)
-                                    .hoverEffect(.highlight)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 12)
+                                            .fill(result.url == selectedResult?.url ? Color.blue.opacity(0.2) : Color(.systemGray5))
+                                    )
                                 }
                                 .buttonStyle(PlainButtonStyle())
                             }
                         }
-                        .padding(.horizontal)
+                        .padding()
                     }
                 } else if !query.isEmpty {
                     Text("No results found.")
+                        .padding()
                         .foregroundColor(.gray)
-                        .padding(.leading)
                 }
 
                 Spacer()
             }
             .frame(maxWidth: 400)
-            .background(Color(.systemGroupedBackground))
+            .background(Color(.systemGray6))
 
             Divider()
 
-        
-            VStack(alignment: .leading, spacing: 12) {
+            
+            VStack(alignment: .leading) {
                 if let result = selectedResult {
                     ScrollView {
                         VStack(alignment: .leading, spacing: 16) {
                             Text(result.title)
                                 .font(.title.bold())
-                                .foregroundColor(.primary)
-
                             Text(result.url)
                                 .font(.subheadline)
                                 .foregroundColor(.blue)
-                                .contextMenu {
-                                    Button("Copy URL") {
-                                        UIPasteboard.general.string = result.url
-                                    }
-                                }
+
+                            Divider()
 
                             if let content = result.content {
                                 Text(content)
                                     .font(.body)
-                                    .foregroundColor(.primary)
+                                    .lineSpacing(5)
                             }
                         }
                         .padding()
                     }
                 } else {
                     Text("Select a result to see more.")
-                        .italic()
                         .foregroundColor(.gray)
+                        .italic()
                         .padding()
                 }
                 Spacer()
             }
-            .padding(.top, 32)
             .frame(maxWidth: .infinity)
         }
     }
 
     func performSearch() {
-        let trimmed = query.trimmingCharacters(in: .whitespaces)
-        guard !trimmed.isEmpty else { return }
+        guard !query.trimmingCharacters(in: .whitespaces).isEmpty else { return }
         isLoading = true
         searchResults = []
         selectedResult = nil
 
-        TavilySearchService.shared.search(query: trimmed) { results in
+        TavilySearchService.shared.search(query: query) { results in
             DispatchQueue.main.async {
                 self.searchResults = results
                 self.isLoading = false

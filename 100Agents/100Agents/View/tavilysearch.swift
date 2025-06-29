@@ -15,7 +15,7 @@ class TavilySearchService {
     private init() {}
 
     private let endpoint = "https://api.tavily.com/search"
-    private let apiKey = "apikeyhere"
+    private let apiKey = "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"
 
     func search(query: String, completion: @escaping ([TavilySearchResult]) -> Void) {
         guard let url = URL(string: endpoint) else {
