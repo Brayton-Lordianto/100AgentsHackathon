@@ -1,31 +1,45 @@
 #include <metal_stdlib>
-using namespace metal;
 #include <SwiftUI/SwiftUI_Metal.h>
 
-[[ stitchable ]] half4 glowShader(float2 position, SwiftUI::Layer layer, float2 size, float brightness, float fallOffScale, float bOffset) {
-    return half4(1,1,1,1);
+using namespace metal;
+
+[[stitchable]] half4 premium_shimmer(float2 position, SwiftUI::Layer layer, float time, float2 size, float duration) {
+    // Sample the original layer
+    half4 originalColor = layer.sample(position);
     
-    half4 color = half4(1);
+    // Stop animation after duration seconds
+    if (time > duration) {
+        return originalColor;
+    }
     
-    float2 uv = 2.0 * position/size - 1.0;
-    uv *= size.y / size.x ;
+    // Normalize position to 0-1 range
+    float2 uv = position / size;
     
-    // Define rectangle size (normalized)
-    float2 rect_size = float2(0.1, 0.1);
+    // Create animated shimmer band that moves diagonally
+    float shimmerAngle = M_PI_F / 4.0;
+    float shimmerPos = (uv.x * cos(shimmerAngle) + uv.y * sin(shimmerAngle));
+    float shimmerSpeed = 1.0 / duration; // Complete one pass in 'duration' seconds
+    float shimmerWidth = 0.1;
     
-    // Find closest point on rectangle
-    float2 closest_rect_point = uv;
-    closest_rect_point.x = clamp(uv.x, -rect_size.x, rect_size.x);
-    closest_rect_point.y = clamp(uv.y, -rect_size.y, rect_size.y);
+    // Animated shimmer position - normalized to complete exactly once
+    float normalizedTime = time / duration; // 0 to 1 over duration
+    float animatedShimmer = shimmerPos - normalizedTime * 2.0 + 1.0;
     
-    // Calculate distance from UV to closest point on rectangle
-    float2 cuv = uv - closest_rect_point;
-    float d2c = length(cuv);
+    // Create sharp shimmer band with smooth edges
+    float shimmerMask = 1.0 - smoothstep(0.0, shimmerWidth, abs(animatedShimmer));
+    shimmerMask = pow(shimmerMask, 2.0); // Make it more focused
     
-    // Calculate glow alpha using logarithmic falloff
-    float alpha = -log(d2c * fallOffScale + bOffset) * brightness;
-    alpha = clamp(alpha, 0.0, 1.0);
+    // Optional: Fade out the shimmer towards the end
+    float fadeOut = 1.0 - smoothstep(0.8, 1.0, normalizedTime);
+    shimmerMask *= fadeOut;
     
-    // Return color with calculated alpha (additive blending effect)
-    return half4(color.rgb * alpha, alpha);
+    // Combine effects
+    half3 shimmerColor = half3(1.0, 0.84, 0.0);   // Rich gold shimmer
+    
+    // Apply shimmer
+    float shimmerIntensity = 0.4;
+    half3 finalColor = originalColor.rgb;
+    finalColor = mix(finalColor, shimmerColor, shimmerMask * shimmerIntensity);
+    
+    return half4(finalColor, originalColor.a);
 }

@@ -4,8 +4,6 @@ import UniformTypeIdentifiers
 
 struct BrowseView: View {
     @StateObject private var viewModel = BrowseViewModel()
-    @StateObject private var mcpService = MCPService()
-    
     let allCategories = MainCategory.allCases
     
     let initialCategoryCount = 5
