@@ -14,7 +14,7 @@ struct SearchView: View {
 
     var body: some View {
         HStack(spacing: 0) {
-            // LEFT PANE
+            
             VStack(alignment: .leading, spacing: 16) {
                 Text("Search")
                     .font(.largeTitle.bold())
