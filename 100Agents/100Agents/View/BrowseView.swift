@@ -5,6 +5,7 @@ import UniformTypeIdentifiers
 struct BrowseView: View {
     @StateObject private var viewModel = BrowseViewModel()
     @ObservedObject var authService: AuthService
+    @Binding var urlFromSearch: String
     let allCategories = MainCategory.allCases
     
     let initialCategoryCount = 5
@@ -72,6 +73,13 @@ struct BrowseView: View {
                             .font(.system(size: 35, weight: .semibold, design: .default))
                         Text("Choose a topic to learn -- or multiple!")
                     }
+                }
+            }
+            .onChange(of: urlFromSearch) { newValue in
+                if !newValue.isEmpty {
+                    urlText = newValue
+                    // Clear the binding after using it
+                    urlFromSearch = ""
                 }
             }
         }
@@ -231,10 +239,10 @@ struct BrowseView: View {
             HStack(spacing: 8) {
                 Image(systemName: "wand.and.stars")
             }
-            .foregroundColor(.black)
+            .foregroundColor(urlText.isEmpty ? .black : .white)
             .padding(.horizontal, 24)
             .padding(.vertical, 12)
-//                    .background(urlText.isEmpty ? Color.gray.opacity(0.1) : Color.white)
+            .background(urlText.isEmpty ? Color.white : Color.blue)
             .cornerRadius(12)
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
@@ -312,5 +320,5 @@ struct BrowseView: View {
 }
 
 #Preview {
-    BrowseView(authService: AuthService())
+    BrowseView(authService: AuthService(), urlFromSearch: .constant(""))
 }

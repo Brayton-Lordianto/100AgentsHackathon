@@ -66,8 +66,10 @@ class AuthService: ObservableObject {
 //                handleOAuthCallback(url: URL(string: redirect ?? "")!)
                 if let url = URL(string: redirect ?? "") {
 //                        UIApplication.shared.open(url)
-                    isLoading.toggle()
-                    isAuthenticated = true 
+                    DispatchQueue.main.asyncAfter(deadline: .now()+2.5) {
+                        self.isLoading.toggle()
+                        self.isAuthenticated = true
+                    }
                 }
             } catch {
                 await MainActor.run {

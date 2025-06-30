@@ -15,21 +15,7 @@ struct _00AgentsApp: App {
     
     var body: some Scene {
         WindowGroup {
-            if authService.isLoading {
-                // Loading screen
-                VStack {
-                    ProgressView()
-                        .scaleEffect(1.5)
-                    Text("Loading...")
-                        .padding()
-                }
-            } else if authService.isAuthenticated {
-                // User is logged in - show main app
-                ContentView(authService: authService)
-            } else {
-                // User is not logged in - show auth screen
-                AuthView(authService: authService)
-            }
+            ContentView(authService: authService)
         }
     }
 }
