@@ -7,31 +7,17 @@ struct AuthView: View {
         GeometryReader { geometry in
             ZStack {
                 // Clean background
-                Color(.systemGroupedBackground)
-                    .ignoresSafeArea()
+//                Color(.systemGroupedBackground)
+//                    .ignoresSafeArea()
                 
                 VStack(spacing: 0) {
-                    Spacer()
+//                    Spacer()
                     
                     // App Logo/Title Section
                     VStack(spacing: 24) {
-                        // Logo
-                        Image(systemName: "brain.head.profile")
-                            .font(.system(size: 72, weight: .light))
-                            .foregroundColor(.primary)
-                        
-                        // Title and subtitle
-                        VStack(spacing: 8) {
-                            Text("100 Agents")
-                                .font(.system(size: 32, weight: .semibold, design: .default))
-                                .foregroundColor(.primary)
-                            
-                            Text("Learn anything through AI-powered videos")
-                                .font(.system(size: 16, weight: .regular))
-                                .foregroundColor(.secondary)
-                                .multilineTextAlignment(.center)
-                                .padding(.horizontal, 32)
-                        }
+                        Image("logo")
+                            .resizable()
+                            .frame(width: 650 * 0.8, height: 450 * 0.8)
                     }
                     
                     Spacer()
@@ -105,12 +91,17 @@ struct AuthView: View {
                                 RoundedRectangle(cornerRadius: 8)
                                     .stroke(Color.orange.opacity(0.2), lineWidth: 1)
                             )
+                            
+//                            Spacer()
+                            
+//                            Spacer()
                         }
                         .padding(.horizontal, 32)
                         .padding(.bottom, 32)
                         .transition(.move(edge: .bottom).combined(with: .opacity))
                     }
                 }
+                .offset(x: -70)
             }
         }
     }
