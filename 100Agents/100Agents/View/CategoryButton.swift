@@ -76,10 +76,10 @@ struct CategoryButton: View {
     }
 }
 
-
-#Preview {
-    BrowseView()
-}
+//
+//#Preview {
+//    BrowseView()
+//}
 
 struct InsettedCapsule: Shape {
     let inset: CGFloat

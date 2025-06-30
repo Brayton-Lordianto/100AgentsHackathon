@@ -1,0 +1,23 @@
+{
+  "images" : [
+    {
+      "filename" : "Brayton Lordianto Photo.jpeg",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "filename" : "Brayton Lordianto Photo 1.jpeg",
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "filename" : "Brayton Lordianto Photo 2.jpeg",
+      "idiom" : "universal",
+      "scale" : "3x"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

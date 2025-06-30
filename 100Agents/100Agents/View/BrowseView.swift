@@ -4,6 +4,7 @@ import UniformTypeIdentifiers
 
 struct BrowseView: View {
     @StateObject private var viewModel = BrowseViewModel()
+    @ObservedObject var authService: AuthService
     let allCategories = MainCategory.allCases
     
     let initialCategoryCount = 5
@@ -16,6 +17,9 @@ struct BrowseView: View {
             ZStack(alignment: .bottom) {
                 ScrollView {
                     VStack(alignment: .leading) {
+                        // User greeting header
+                        userGreetingHeader
+                        
                         Group {
                             if !viewModel.recentCategories.isEmpty {
                                 RecentlySelectedView(viewModel: viewModel, recentCategories: viewModel.recentCategories) { category in
@@ -262,8 +266,51 @@ struct BrowseView: View {
         // TODO: Navigate to reel generation with URL
         print("URL submitted: \(urlText)")
     }
+    
+    var userGreetingHeader: some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Hello, \(authService.userName)")
+                    .font(.title2)
+                    .fontWeight(.semibold)
+                
+                Text("What would you like to learn today?")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+            }
+            
+            Spacer()
+            
+            // Simple profile circle with initials
+//            Text(authService.userName.prefix(1).uppercased())
+            VStack {
+                Image("BL")
+                    .resizable()
+                    .font(.title2)
+                    .fontWeight(.bold)
+                    .foregroundColor(.white)
+                    .frame(width: 60, height: 40)
+                    .background(
+                        LinearGradient(
+                            gradient: Gradient(colors: [.blue, .purple]),
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .clipShape(Circle())
+                    .overlay(
+                        Circle().stroke(Color.black, lineWidth: 2)
+                    )
+                
+                Text(authService.userName.prefix(1).uppercased())
+                    .font(.caption)
+            }
+        }
+        .padding(.horizontal)
+        .padding(.top)
+    }
 }
 
 #Preview {
-    BrowseView()
+    BrowseView(authService: AuthService())
 }

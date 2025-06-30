@@ -25,7 +25,7 @@ struct _00AgentsApp: App {
                 }
             } else if authService.isAuthenticated {
                 // User is logged in - show main app
-                ContentView()
+                ContentView(authService: authService)
             } else {
                 // User is not logged in - show auth screen
                 AuthView(authService: authService)

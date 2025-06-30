@@ -15,9 +15,6 @@ struct AuthView: View {
                     .font(.largeTitle)
                     .fontWeight(.bold)
                 
-                Text("Sign in to continue")
-                    .font(.headline)
-                    .foregroundColor(.secondary)
             }
             
             // Google Sign In Button
@@ -25,17 +22,17 @@ struct AuthView: View {
                 authService.loginWithGoogle()
             }) {
                 HStack {
-                    Image(systemName: "globe")
-                        .font(.title2)
-                    
-                    Text("Continue with Google")
+                    Text("Sign in with Google")
                         .font(.headline)
+                    Image("GoogleIcon")
+                        .resizable()
+                        .frame(width: 30, height: 30)
+                        .font(.title2)
                 }
+                .padding(40)
+                .border(.blue, width: 5)
+                .cornerRadius(10)
                 .frame(maxWidth: .infinity)
-                .frame(height: 50)
-                .background(Color.blue)
-                .foregroundColor(.white)
-                .cornerRadius(12)
             }
             .disabled(authService.isLoading)
             
