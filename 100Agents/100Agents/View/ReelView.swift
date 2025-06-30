@@ -43,6 +43,7 @@ struct ReelView: View {
             }
         }
         .navigationBarHidden(true)
+        .toolbar(.hidden, for: .tabBar)
         .onAppear {
             setupPlayer()
         }
@@ -70,8 +71,29 @@ struct ReelView: View {
         isDragging ? dragValue : (duration > 0 ? currentTime / duration : 0)
     }
     
+    @Environment(\.presentationMode) var presentationMode
+
     func videoOverlay(_ geometry: GeometryProxy) -> some View {
         ZStack {
+            // Back button
+            VStack {
+                HStack {
+                    Button(action: {
+                        presentationMode.wrappedValue.dismiss()
+                    }) {
+                        Image(systemName: "chevron.left")
+                            .font(.title2)
+                            .foregroundColor(.white)
+                            .padding()
+                            .background(Color.black.opacity(0.3))
+                            .clipShape(Circle())
+                    }
+                    Spacer()
+                }
+                .padding()
+                Spacer()
+            }
+
             VStack {
                 
                 Spacer()

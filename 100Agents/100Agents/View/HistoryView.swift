@@ -3,11 +3,12 @@ import SwiftUI
 
 struct HistoryView: View {
     // Selected demo videos for history
-    let historyItems: [DemoVideo] = [
+    @State private var historyItems: [DemoVideo] = [
         .pythagoreanTheorem,
         .derivatives,
         .matrixOperations
     ]
+    @State private var showingClearAlert = false
     
     var body: some View {
         NavigationView {
@@ -16,19 +17,43 @@ struct HistoryView: View {
                     // Header section
                     headerSection
                     
-                    // History items
-                    LazyVStack(spacing: 16) {
-                        ForEach(historyItems, id: \.id) { demoVideo in
-                            HistoryItemCard(demoVideo: demoVideo)
+                    if historyItems.isEmpty {
+                        emptyHistoryView
+                    } else {
+                        // History items
+                        LazyVStack(spacing: 16) {
+                            ForEach(historyItems, id: \.id) { demoVideo in
+                                HistoryItemCard(demoVideo: demoVideo)
+                            }
                         }
+                        .padding(.horizontal)
+                        .padding(.top, 8)
                     }
-                    .padding(.horizontal)
-                    .padding(.top, 8)
                 }
             }
             .background(Color(.systemGroupedBackground))
             .navigationTitle("History")
             .navigationBarTitleDisplayMode(.large)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    if !historyItems.isEmpty {
+                        Button("Clear") {
+                            showingClearAlert = true
+                        }
+                        .foregroundColor(.red)
+                    }
+                }
+            }
+            .alert("Clear History", isPresented: $showingClearAlert) {
+                Button("Clear All", role: .destructive) {
+                    withAnimation(.easeInOut(duration: 0.3)) {
+                        historyItems.removeAll()
+                    }
+                }
+                Button("Cancel", role: .cancel) { }
+            } message: {
+                Text("Are you sure you want to clear all learning history? This action cannot be undone.")
+            }
         }
         .navigationViewStyle(StackNavigationViewStyle())
     }
@@ -59,6 +84,32 @@ struct HistoryView: View {
                 .padding(.top, 8)
         }
         .background(Color(.systemGroupedBackground))
+    }
+    
+    var emptyHistoryView: some View {
+        VStack(spacing: 20) {
+            Spacer()
+            
+            Image(systemName: "clock")
+                .font(.system(size: 60))
+                .foregroundColor(.secondary)
+            
+            VStack(spacing: 8) {
+                Text("No Learning History")
+                    .font(.title2)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.primary)
+                
+                Text("Start learning to see your progress here")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+            }
+            
+            Spacer()
+        }
+        .frame(maxWidth: .infinity)
+        .padding()
     }
 }
 
@@ -106,32 +157,32 @@ struct HistoryItemCard: View {
                 VStack(spacing: 12) {
                     // Progress bar
                     VStack(alignment: .leading, spacing: 6) {
-                        HStack {
-                            Text("Progress")
-                                .font(.system(size: 12, weight: .medium))
-                                .foregroundColor(.secondary)
-                            
-                            Spacer()
-                            
-                            Text("100%")
-                                .font(.system(size: 12, weight: .medium))
-                                .foregroundColor(.blue)
-                        }
+//                        HStack {
+//                            Text("Progress")
+//                                .font(.system(size: 12, weight: .medium))
+//                                .foregroundColor(.secondary)
+//                            
+//                            Spacer()
+//                            
+//                            Text("100%")
+//                                .font(.system(size: 12, weight: .medium))
+//                                .foregroundColor(.blue)
+//                        }
                         
-                        GeometryReader { geometry in
-                            ZStack(alignment: .leading) {
-                                Rectangle()
-                                    .fill(Color.gray.opacity(0.2))
-                                    .frame(height: 4)
-                                    .cornerRadius(2)
-                                
-                                Rectangle()
-                                    .fill(Color.blue)
-                                    .frame(width: geometry.size.width, height: 4)
-                                    .cornerRadius(2)
-                            }
-                        }
-                        .frame(height: 4)
+//                        GeometryReader { geometry in
+//                            ZStack(alignment: .leading) {
+//                                Rectangle()
+//                                    .fill(Color.gray.opacity(0.2))
+//                                    .frame(height: 4)
+//                                    .cornerRadius(2)
+//                                
+//                                Rectangle()
+//                                    .fill(Color.blue)
+//                                    .frame(width: geometry.size.width, height: 4)
+//                                    .cornerRadius(2)
+//                            }
+//                        }
+//                        .frame(height: 4)
                     }
                     
                     // Action button
