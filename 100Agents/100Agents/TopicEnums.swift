@@ -146,4 +146,81 @@ enum DemoVideo: String, CaseIterable, Identifiable {
             return "Show how complex numbers multiply using rotation and scaling"
         }
     }
+    
+    // Define learning flows with next/previous relationships
+    var next: DemoVideo? {
+        switch self {
+        case .pythagoreanTheorem:
+            return .derivatives
+        case .derivatives:
+            return .quadraticFunction
+        case .quadraticFunction:
+            return .unitCircle
+        case .unitCircle:
+            return .surfacePlot
+        case .surfacePlot:
+            return .sphereVolume
+        case .sphereVolume:
+            return .cubeSurfaceArea
+        case .cubeSurfaceArea:
+            return .matrixOperations
+        case .matrixOperations:
+            return .eigenvalues
+        case .eigenvalues:
+            return .complexNumbers
+        case .complexNumbers:
+            return nil // End of flow
+        }
+    }
+    
+    var previous: DemoVideo? {
+        switch self {
+        case .pythagoreanTheorem:
+            return nil // Start of flow
+        case .derivatives:
+            return .pythagoreanTheorem
+        case .quadraticFunction:
+            return .derivatives
+        case .unitCircle:
+            return .quadraticFunction
+        case .surfacePlot:
+            return .unitCircle
+        case .sphereVolume:
+            return .surfacePlot
+        case .cubeSurfaceArea:
+            return .sphereVolume
+        case .matrixOperations:
+            return .cubeSurfaceArea
+        case .eigenvalues:
+            return .matrixOperations
+        case .complexNumbers:
+            return .eigenvalues
+        }
+    }
+    
+    // Get formatted title for display
+    var displayTitle: String {
+        switch self {
+        case .pythagoreanTheorem:
+            return "Pythagorean Theorem"
+        case .quadraticFunction:
+            return "Quadratic Functions"
+        case .unitCircle:
+            return "Unit Circle"
+        case .surfacePlot:
+            return "3D Surface Plots"
+        case .sphereVolume:
+            return "Sphere Volume"
+        case .cubeSurfaceArea:
+            return "Cube Surface Area"
+        case .derivatives:
+            return "Understanding Derivatives"
+        case .matrixOperations:
+            return "Matrix Operations"
+        case .eigenvalues:
+            return "Eigenvalues & Eigenvectors"
+        case .complexNumbers:
+            return "Complex Numbers"
+        }
+    }
 }

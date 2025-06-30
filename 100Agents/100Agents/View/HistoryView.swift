@@ -229,10 +229,10 @@ struct HistoryItemCard: View {
     }
     
     var reelDestination: some View {
-        ReelView(
-            title: formattedTitle,
-            videoURL: videoURL,
-            isActive: true
+        ReelsContainerView(
+            reels: [],
+            startingIndex: 0,
+            startingVideo: demoVideo
         )
     }
     

@@ -12,6 +12,8 @@ struct BrowseView: View {
     @State private var showAllCategories = false
     @State private var urlText = ""
     @State private var showingFilePicker = false
+    @State private var isLoadingURL = false
+    @State private var shouldNavigateToReels = false
 
     var body: some View {
         NavigationView {
@@ -233,28 +235,52 @@ struct BrowseView: View {
     }
     
     var urlEntrySubmitButton: some View {
-        Button(action: {
-            handleURLSubmission()
-        }) {
-            HStack(spacing: 8) {
-                Image(systemName: "wand.and.stars")
+        ZStack {
+            // Hidden NavigationLink that gets triggered programmatically
+            NavigationLink(
+                destination: {
+                    let urlContentItems = createURLContentItems()
+                    let reels = ReelsContainerView.createReelsFromContentItems(urlContentItems)
+                    return ReelsContainerView(reels: reels, startingIndex: 0)
+                }(),
+                isActive: $shouldNavigateToReels
+            ) {
+                EmptyView()
             }
-            .foregroundColor(urlText.isEmpty ? .black : .white)
-            .padding(.horizontal, 24)
-            .padding(.vertical, 12)
-            .background(urlText.isEmpty ? Color.white : Color.blue)
-            .cornerRadius(12)
-            .overlay(
-                RoundedRectangle(cornerRadius: 12)
-                    .stroke(urlText.isEmpty ? Color.gray.opacity(0.2) : Color.black.opacity(0.2), lineWidth: 1)
-            )
-            .shadow(color: urlText.isEmpty ? Color.clear : Color.black.opacity(0.2), radius: 2, x: 0, y: 1)
-            .shadow(color: urlText.isEmpty ? Color.clear : Color.black.opacity(0.1), radius: 6, x: 0, y: 4)
-            .scaleEffect(urlText.isEmpty ? 0.95 : 1.0)
-            .animation(.spring(response: 0.3, dampingFraction: 0.7), value: urlText.isEmpty)
+            .hidden()
+            
+            // Visible button
+            Button(action: {
+                startURLProcessing()
+            }) {
+                HStack(spacing: 8) {
+                    if isLoadingURL {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                            .scaleEffect(0.8)
+                        Text("Processing...")
+                            .font(.system(size: 14, weight: .medium))
+                    } else {
+                        Image(systemName: "wand.and.stars")
+                    }
+                }
+                .foregroundColor(urlText.isEmpty ? .black : .white)
+                .padding(.horizontal, 24)
+                .padding(.vertical, 12)
+                .background(urlText.isEmpty ? Color.white : (isLoadingURL ? Color.orange : Color.blue))
+                .cornerRadius(12)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(urlText.isEmpty ? Color.gray.opacity(0.2) : Color.black.opacity(0.2), lineWidth: 1)
+                )
+                .shadow(color: urlText.isEmpty ? Color.clear : Color.black.opacity(0.2), radius: 2, x: 0, y: 1)
+                .shadow(color: urlText.isEmpty ? Color.clear : Color.black.opacity(0.1), radius: 6, x: 0, y: 4)
+                .scaleEffect(urlText.isEmpty ? 0.95 : 1.0)
+                .animation(.spring(response: 0.3, dampingFraction: 0.7), value: urlText.isEmpty)
+                .animation(.easeInOut(duration: 0.3), value: isLoadingURL)
+            }
+            .disabled(urlText.isEmpty || isLoadingURL)
         }
-        .disabled(urlText.isEmpty)
-
     }
     
     private func handlePDFSelection(_ result: Result<[URL], Error>) {
@@ -273,6 +299,41 @@ struct BrowseView: View {
         guard !urlText.isEmpty else { return }
         // TODO: Navigate to reel generation with URL
         print("URL submitted: \(urlText)")
+    }
+    
+    private func startURLProcessing() {
+        guard !urlText.isEmpty else { return }
+        
+        isLoadingURL = true
+        
+        // Simulate processing time (5 seconds)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
+            isLoadingURL = false
+            shouldNavigateToReels = true
+        }
+    }
+    
+    private func createURLContentItems() -> [ContentItem] {
+        // Create sample content items based on URL input
+        // In a real app, this would parse the URL content and generate relevant topics
+        return [
+            ContentItem(title: "Understanding \(getURLDomain())", description: "Learn about concepts from \(urlText)"),
+            ContentItem(title: "Key Concepts", description: "Main ideas from the article"),
+            ContentItem(title: "Mathematical Foundations", description: "Mathematical concepts explained"),
+            ContentItem(title: "Practical Applications", description: "Real-world applications"),
+            ContentItem(title: "Advanced Topics", description: "Deeper dive into complex ideas")
+        ]
+    }
+    
+    private func getURLDomain() -> String {
+        guard let url = URL(string: urlText),
+              let host = url.host else {
+            return "Web Content"
+        }
+        
+        // Clean up common prefixes
+        let cleanHost = host.replacingOccurrences(of: "www.", with: "")
+        return cleanHost.capitalized
     }
     
     var userGreetingHeader: some View {
