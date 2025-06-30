@@ -211,11 +211,11 @@ func getVideoURL(for title: String) -> URL? {
     }
     
     if let match = bestMatch, let videoName = videoMapping[match] {
-        return Bundle.main.url(forResource: videoName, withExtension: "mp4", subdirectory: "100_agents_videos")
+        return Bundle.main.url(forResource: videoName, withExtension: "mp4")
     }
     
     // Fallback to first available video
-    return Bundle.main.url(forResource: "complexNumbers", withExtension: "mp4", subdirectory: "100_agents_videos")
+    return Bundle.main.url(forResource: "complexNumbers", withExtension: "mp4")
 }
 
 // MARK: - Preview
